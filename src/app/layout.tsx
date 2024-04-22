@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import clsx from "clsx";
 
 import "./globals.css";
 
@@ -17,7 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={clsx(inter.className, "bg-gray-200 min-h-screen")}>
+        <main>{children}</main>
+      </body>
     </html>
   );
 }
