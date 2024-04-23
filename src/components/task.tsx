@@ -1,14 +1,21 @@
 import { Badge, Button, Checkbox } from "flowbite-react";
+import { FC } from "react";
 
-export default function Task() {
+import { TaskModel } from "todo-app/models/task";
+
+interface Props {
+  task: TaskModel;
+}
+
+const Task: FC<Props> = ({ task }) => {
   return (
     <div className="bg-white rounded-xl p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex gap-2 items-center">
-          <Checkbox />
-          <span className="text-gray-900">Task 1</span>
+          <Checkbox checked={task.isCompleted} />
+          <span className="text-gray-900">{task.title}</span>
         </div>
-        <Badge color="success">Completed</Badge>
+        {task.isCompleted && <Badge color="success">Completed</Badge>}
       </div>
       <div className="flex items-center justify-between">
         <span className="text-gray-600 text-sm">2024/12/12</span>
@@ -18,4 +25,6 @@ export default function Task() {
       </div>
     </div>
   );
-}
+};
+
+export default Task;

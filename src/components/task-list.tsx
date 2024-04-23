@@ -4,26 +4,11 @@ import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 
 import Task from "./task";
 import { StrictModeDroppable } from "./dropable";
-
-const tasks = [
-  {
-    id: "1",
-  },
-  {
-    id: "2",
-  },
-  {
-    id: "3",
-  },
-  {
-    id: "4",
-  },
-  {
-    id: "5",
-  },
-];
+import { useTaskContext } from "todo-app/context/task-context";
 
 export default function TaskList() {
+  const { tasks } = useTaskContext();
+  console.log(tasks);
   const onDragEnd = (result: DropResult) => {
     console.log(result);
   };
@@ -34,7 +19,11 @@ export default function TaskList() {
           {(provided) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {tasks.map((task, index) => (
-                <Draggable key={task.id} draggableId={task.id} index={index}>
+                <Draggable
+                  key={task.id}
+                  draggableId={task.id.toString()}
+                  index={index}
+                >
                   {(provided) => (
                     <div
                       ref={provided.innerRef}
@@ -42,7 +31,7 @@ export default function TaskList() {
                       {...provided.dragHandleProps}
                       className="mb-4"
                     >
-                      <Task key={task.id} />
+                      <Task key={task.id} task={task} />
                     </div>
                   )}
                 </Draggable>

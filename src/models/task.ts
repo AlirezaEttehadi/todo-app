@@ -6,3 +6,5 @@ export type TaskModel = {
 };
 
 export type TaskListModel = TaskModel[] | [];
+
+export const TodoKey = "todo-app";
