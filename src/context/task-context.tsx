@@ -20,6 +20,7 @@ interface TaskContextType {
   toggleTaskCompletion: (id: number) => void;
   sortTasksByDate: (order: "asc" | "desc") => void;
   filterTasksByCompletion: (type: "all" | "completed" | "notCompleted") => void;
+  reorderTasks: (startIndex: number, endIndex: number | undefined) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -90,6 +91,15 @@ export const TaskProvider: FC<Props> = ({ children }) => {
     setTasks(filteredTasks);
   };
 
+  const reorderTasks = (startIndex: number, endIndex: number | undefined) => {
+    if (typeof endIndex === "number") {
+      const updatedTasks = [...tasks];
+      const [removedTask] = updatedTasks.splice(startIndex, 1);
+      updatedTasks.splice(endIndex, 0, removedTask);
+      persistState(TodoKey, updatedTasks, setTasks);
+    }
+  };
+
   return (
     <TaskContext.Provider
       value={{
@@ -100,6 +110,7 @@ export const TaskProvider: FC<Props> = ({ children }) => {
         toggleTaskCompletion,
         sortTasksByDate,
         filterTasksByCompletion,
+        reorderTasks,
       }}
     >
       {children}

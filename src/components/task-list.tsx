@@ -7,10 +7,9 @@ import { StrictModeDroppable } from "./dropable";
 import { useTaskContext } from "todo-app/context/task-context";
 
 export default function TaskList() {
-  const { tasks } = useTaskContext();
-  console.log(tasks);
+  const { tasks, reorderTasks } = useTaskContext();
   const onDragEnd = (result: DropResult) => {
-    console.log(result);
+    reorderTasks(result.source.index, result.destination?.index);
   };
   return (
     <div className="w-full max-w-md">
