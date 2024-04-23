@@ -15,10 +15,10 @@ import { loadState, persistState } from "todo-app/utils/storage";
 interface TaskContextType {
   tasks: TaskListModel;
   addTask: (text: string) => void;
-  clearAllTasks: () => void;
+  clearAllCompletedTasks: () => void;
   clearTask: (id: number) => void;
   toggleTaskCompletion: (id: number) => void;
-  sortTasksByDate: (order: "asc" | "desc") => void;
+  sortTasksByDate: (order: "default" | "asc" | "desc") => void;
   filterTasksByCompletion: (type: "all" | "completed" | "notCompleted") => void;
   reorderTasks: (startIndex: number, endIndex: number | undefined) => void;
 }
@@ -47,8 +47,9 @@ export const TaskProvider: FC<Props> = ({ children }) => {
     persistState(TodoKey, [...tasks, newTask], setTasks);
   };
 
-  const clearAllTasks = () => {
-    persistState(TodoKey, [], setTasks);
+  const clearAllCompletedTasks = () => {
+    const updatedTasks = tasks.filter((task) => !task.isCompleted);
+    persistState(TodoKey, updatedTasks, setTasks);
   };
 
   const clearTask = (id: number) => {
@@ -63,14 +64,20 @@ export const TaskProvider: FC<Props> = ({ children }) => {
     persistState(TodoKey, updatedTasks, setTasks);
   };
 
-  const sortTasksByDate = (order: "asc" | "desc") => {
-    const sortedTasks = [...tasks].sort((a, b) => {
-      if (!a.createdDate || !b.createdDate) return 0;
-      return order === "asc"
-        ? new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime()
-        : new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime();
-    });
-    setTasks(sortedTasks);
+  const sortTasksByDate = (order: "default" | "asc" | "desc") => {
+    if (order === "default") {
+      setTasks(loadState(TodoKey) || []);
+    } else {
+      const sortedTasks = [...tasks].sort((a, b) => {
+        if (!a.createdDate || !b.createdDate) return 0;
+        return order === "asc"
+          ? new Date(a.createdDate).getTime() -
+              new Date(b.createdDate).getTime()
+          : new Date(b.createdDate).getTime() -
+              new Date(a.createdDate).getTime();
+      });
+      setTasks(sortedTasks);
+    }
   };
 
   const filterTasksByCompletion = (
@@ -105,7 +112,7 @@ export const TaskProvider: FC<Props> = ({ children }) => {
       value={{
         tasks,
         addTask,
-        clearAllTasks,
+        clearAllCompletedTasks,
         clearTask,
         toggleTaskCompletion,
         sortTasksByDate,
