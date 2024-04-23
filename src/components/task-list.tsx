@@ -31,7 +31,7 @@ export default function TaskList() {
     <div className="w-full max-w-md">
       <DragDropContext onDragEnd={onDragEnd}>
         <StrictModeDroppable droppableId="tasks">
-          {(provided, snapshot) => (
+          {(provided) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {tasks.map((task, index) => (
                 <Draggable key={task.id} draggableId={task.id} index={index}>
