@@ -18,6 +18,8 @@ interface TaskContextType {
   clearAllTasks: () => void;
   clearTask: (id: number) => void;
   toggleTaskCompletion: (id: number) => void;
+  sortTasksByDate: (order: "asc" | "desc") => void;
+  filterTasksByCompletion: (type: "all" | "completed" | "notCompleted") => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -60,9 +62,45 @@ export const TaskProvider: FC<Props> = ({ children }) => {
     persistState(TodoKey, updatedTasks, setTasks);
   };
 
+  const sortTasksByDate = (order: "asc" | "desc") => {
+    const sortedTasks = [...tasks].sort((a, b) => {
+      if (!a.createdDate || !b.createdDate) return 0;
+      return order === "asc"
+        ? new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime()
+        : new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime();
+    });
+    setTasks(sortedTasks);
+  };
+
+  const filterTasksByCompletion = (
+    type: "all" | "completed" | "notCompleted"
+  ) => {
+    let persistedTasks: TaskListModel = loadState(TodoKey) || [];
+    let filteredTasks: TaskListModel;
+    switch (type) {
+      case "completed":
+        filteredTasks = persistedTasks.filter((task) => task.isCompleted);
+        break;
+      case "notCompleted":
+        filteredTasks = persistedTasks.filter((task) => !task.isCompleted);
+        break;
+      default:
+        filteredTasks = persistedTasks;
+    }
+    setTasks(filteredTasks);
+  };
+
   return (
     <TaskContext.Provider
-      value={{ tasks, addTask, clearAllTasks, clearTask, toggleTaskCompletion }}
+      value={{
+        tasks,
+        addTask,
+        clearAllTasks,
+        clearTask,
+        toggleTaskCompletion,
+        sortTasksByDate,
+        filterTasksByCompletion,
+      }}
     >
       {children}
     </TaskContext.Provider>
